@@ -8,29 +8,32 @@ public class Spawner : MonoBehaviour
 
     private List<SpawnPoint> _spawnPoints;
     private WaitForSeconds _spawnDelay;
-    private Coroutine _spawnCoroutine;
 
     private void Awake()
     {
         _spawnPoints = new List<SpawnPoint>(GetComponentsInChildren<SpawnPoint>());
-
-        foreach (SpawnPoint spawnPoint in _spawnPoints)
-        {
-            spawnPoint.OnSpawned += OnSpawned;
-            spawnPoint.OnEmptied += OnEmptied;
-        }
 
         UpdateSpawnDelay();
     }
 
     private void OnEnable()
     {
-        _spawnCoroutine = StartCoroutine(Spawn());
+        foreach (SpawnPoint spawnPoint in _spawnPoints)
+        {
+            spawnPoint.Spawned += OnSpawned;
+            spawnPoint.Emptied += OnEmptied;
+        }
+
+        StartCoroutine(Spawn());
     }
 
     private void OnDisable()
     {
-        StopCoroutine(_spawnCoroutine);
+        foreach (SpawnPoint spawnPoint in _spawnPoints)
+        {
+            spawnPoint.Spawned -= OnSpawned;
+            spawnPoint.Emptied -= OnEmptied;
+        }
     }
 
     private void OnValidate()

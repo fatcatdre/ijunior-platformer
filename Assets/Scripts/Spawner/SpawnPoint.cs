@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
@@ -7,11 +8,8 @@ public class SpawnPoint : MonoBehaviour
 
     private bool _isFull;
 
-    public delegate void OnSpawnedHandler(SpawnPoint spawnPoint);
-    public delegate void OnEmptiedHandler(SpawnPoint spawnPoint);
-
-    public event OnSpawnedHandler OnSpawned;
-    public event OnEmptiedHandler OnEmptied;
+    public event Action<SpawnPoint> Spawned;
+    public event Action<SpawnPoint> Emptied;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -19,7 +17,7 @@ public class SpawnPoint : MonoBehaviour
         {
             _isFull = true;
 
-            OnSpawned?.Invoke(this);
+            Spawned?.Invoke(this);
         }
     }
 
@@ -29,7 +27,7 @@ public class SpawnPoint : MonoBehaviour
         {
             _isFull = false;
 
-            OnEmptied?.Invoke(this);
+            Emptied?.Invoke(this);
         }
     }
 
