@@ -6,9 +6,6 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public abstract class Character : MonoBehaviour
 {
-    [Header("Input")]
-    [SerializeField] protected InputProvider _input;
-
     [Header("Movement")]
     [SerializeField] protected float _moveSpeed = 12f;
     [SerializeField] protected float _groundAcceleration = 70f;
@@ -44,8 +41,10 @@ public abstract class Character : MonoBehaviour
     protected float _jumpGravity;
     protected float _fallGravity;
 
-    protected virtual bool HasMoveInput => _input.HasMoveInput;
+    protected virtual bool HasMoveInput => Mathf.Approximately(_moveInput, 0f) == false;
 
+    public Animator Animator => _animator;
+    public SpriteRenderer Sprite => _sprite;
     public bool IsGrounded => _isGrounded;
     public bool IsFalling => _rigidbody.velocity.y < _minVelocityForFall;
 
@@ -61,12 +60,9 @@ public abstract class Character : MonoBehaviour
 
     protected virtual void Update()
     {
-        ReadInput();
-
         CheckHeadCollision();
         CalculateGravity();
         CalculateMovement();
-        CalculateJump();
         CheckFeetCollision();
 
         UpdateSpriteAnimation();
@@ -79,9 +75,17 @@ public abstract class Character : MonoBehaviour
         CalculateJumpParameters();
     }
 
-    protected virtual void ReadInput()
+    public virtual void SetInput(float input)
     {
-        _moveInput = _input.Movement;
+        input = Mathf.Clamp(input, -1f, 1f);
+
+        _moveInput = input;
+    }
+
+    public virtual void TryJump()
+    {
+        if (_isGrounded || _jumpCount < _maxExtraJumps)
+            Jump();
     }
 
     protected virtual void CheckHeadCollision()
@@ -117,12 +121,6 @@ public abstract class Character : MonoBehaviour
             _targetVelocity.x = Mathf.MoveTowards(_targetVelocity.x, _moveInput * _moveSpeed, acceleration * Time.deltaTime);
         else
             _targetVelocity.x = Mathf.MoveTowards(_targetVelocity.x, 0f, deceleration * Time.deltaTime);
-    }
-
-    protected virtual void CalculateJump()
-    {
-        if (_input.JumpPressed && (_isGrounded || _jumpCount < _maxExtraJumps))
-            Jump();
     }
 
     protected virtual void Jump()

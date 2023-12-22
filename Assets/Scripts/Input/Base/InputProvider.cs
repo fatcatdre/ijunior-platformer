@@ -1,9 +1,23 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Character))]
 public abstract class InputProvider : MonoBehaviour
 {
-    public virtual float Movement { get; } = 0f;
-    public virtual bool JumpPressed { get; } = false;
+    protected float _movement;
+    protected bool _jumpPressed;
 
-    public bool HasMoveInput => Mathf.Approximately(Movement, 0f) == false;
+    protected Character _character;
+
+    protected virtual void Awake()
+    {
+        _character = GetComponent<Character>();
+    }
+
+    protected virtual void Update()
+    {
+        _character.SetInput(_movement);
+
+        if (_jumpPressed)
+            _character.TryJump();
+    }
 }
