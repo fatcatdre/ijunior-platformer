@@ -22,12 +22,12 @@ public class Player : Character, ICollector
 
     private void OnEnable()
     {
-        _health.Change += OnHealthChanged;
+        _health.Changed += OnHealthChanged;
     }
 
     private void OnDisable()
     {
-        _health.Change -= OnHealthChanged;
+        _health.Changed -= OnHealthChanged;
     }
 
     public void TakeDamage(int damage)

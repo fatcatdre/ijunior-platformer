@@ -11,11 +11,16 @@ public class Health : MonoBehaviour
     public int MaxHealth => _maxHealth;
     public int CurrentHealth => _currentHealth;
 
-    public event UnityAction<int, int> Change;
+    public event UnityAction<int, int> Changed;
 
     private void Awake()
     {
         _currentHealth = _maxHealth;
+    }
+
+    private void Start()
+    {
+        Changed?.Invoke(_currentHealth, _maxHealth);
     }
 
     public void Damage(int damageAmount)
@@ -36,6 +41,6 @@ public class Health : MonoBehaviour
 
         changeMethod(amount);
 
-        Change?.Invoke(_currentHealth, _maxHealth);
+        Changed?.Invoke(_currentHealth, _maxHealth);
     }
 }

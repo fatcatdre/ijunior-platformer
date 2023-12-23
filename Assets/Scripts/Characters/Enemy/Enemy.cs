@@ -21,12 +21,12 @@ public class Enemy : Character, ICollector, IProjectileInteractable
 
     private void OnEnable()
     {
-        _health.Change += OnHealthChanged;
+        _health.Changed += OnHealthChanged;
     }
 
     private void OnDisable()
     {
-        _health.Change -= OnHealthChanged;
+        _health.Changed -= OnHealthChanged;
     }
 
     private void OnHealthChanged(int health, int maxHealth)
